@@ -2,24 +2,25 @@ import { useEffect, useState } from 'react'
 import { getSearchTracks } from './spotify'
 import Sidebar from './Sidebar.jsx'
 import Body from './Body.jsx'
+import Player from './Player.jsx'
 
 const PLAYLIST_TYPES = [
-  { id: 'top-hits', name: 'Top Hits', query: 'global top hits', mood: 'Trending now' },
-  { id: 'bollywood', name: 'Bollywood', query: 'bollywood hits', mood: 'Hindi chartbusters' },
-  { id: 'pop', name: 'Pop Essentials', query: 'pop hits', mood: 'Popular anthems' },
-  { id: 'chill', name: 'Chill Vibes', query: 'chill music', mood: 'Relax and unwind' },
-  { id: 'workout', name: 'Workout Mix', query: 'workout music', mood: 'High energy tracks' },
-  { id: 'romance', name: 'Romantic', query: 'romantic songs', mood: 'Love mood playlist' },
-  { id: 'hip-hop', name: 'Hip-Hop', query: 'hip hop hits', mood: 'Rap and rhythm' },
-  { id: 'party', name: 'Party Time', query: 'party songs', mood: 'Dance floor ready' },
-  { id: 'focus', name: 'Focus Flow', query: 'focus music', mood: 'Deep work beats' },
-  { id: 'lofi', name: 'Lo-Fi Lounge', query: 'lofi beats', mood: 'Calm study atmosphere' },
-  { id: 'rock', name: 'Rock Classics', query: 'classic rock', mood: 'Guitar-driven legends' },
-  { id: 'indie', name: 'Indie Mix', query: 'indie music', mood: 'Fresh alternative sounds' },
-  { id: 'edm', name: 'EDM Blast', query: 'edm hits', mood: 'Festival energy' },
-  { id: 'jazz', name: 'Jazz Evening', query: 'jazz songs', mood: 'Smooth and soulful' },
-  { id: 'sleep', name: 'Sleep Sounds', query: 'sleep music', mood: 'Soft night-time tracks' },
-  { id: 'devotional', name: 'Devotional', query: 'devotional songs', mood: 'Peaceful spiritual songs' },
+  { id: 'top-hits', name: 'Top Hits', query: 'global top hits', mood: 'Trending now', color: '#e13300' },
+  { id: 'bollywood', name: 'Bollywood', query: 'bollywood hits', mood: 'Hindi chartbusters', color: '#8400e7' },
+  { id: 'pop', name: 'Pop Essentials', query: 'pop hits', mood: 'Popular anthems', color: '#1e3264' },
+  { id: 'chill', name: 'Chill Vibes', query: 'chill music', mood: 'Relax and unwind', color: '#503750' },
+  { id: 'workout', name: 'Workout Mix', query: 'workout music', mood: 'High energy tracks', color: '#e8115b' },
+  { id: 'romance', name: 'Romantic', query: 'romantic songs', mood: 'Love mood playlist', color: '#dc148c' },
+  { id: 'hip-hop', name: 'Hip-Hop', query: 'hip hop hits', mood: 'Rap and rhythm', color: '#ba5d07' },
+  { id: 'party', name: 'Party Time', query: 'party songs', mood: 'Dance floor ready', color: '#e61e32' },
+  { id: 'focus', name: 'Focus Flow', query: 'focus music', mood: 'Deep work beats', color: '#1e3264' },
+  { id: 'lofi', name: 'Lo-Fi Lounge', query: 'lofi beats', mood: 'Calm study atmosphere', color: '#477d95' },
+  { id: 'rock', name: 'Rock Classics', query: 'classic rock', mood: 'Guitar-driven legends', color: '#e91429' },
+  { id: 'indie', name: 'Indie Mix', query: 'indie music', mood: 'Fresh alternative sounds', color: '#608108' },
+  { id: 'edm', name: 'EDM Blast', query: 'edm hits', mood: 'Festival energy', color: '#0d73ec' },
+  { id: 'jazz', name: 'Jazz Evening', query: 'jazz songs', mood: 'Smooth and soulful', color: '#7d4b32' },
+  { id: 'sleep', name: 'Sleep Sounds', query: 'sleep music', mood: 'Soft night-time tracks', color: '#1e3264' },
+  { id: 'devotional', name: 'Devotional', query: 'devotional songs', mood: 'Peaceful spiritual songs', color: '#b06239' },
 ]
 
 const mapApiTracks = (results) =>
@@ -46,10 +47,13 @@ function App() {
     name: PLAYLIST_TYPES[0].name,
     images: [],
     tracks: { total: 0 },
+    color: PLAYLIST_TYPES[0].color,
   })
   const [tracks, setTracks] = useState([])
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const [currentTrack, setCurrentTrack] = useState(null)
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(-1)
 
   // Load tracks for selected playlist type or search query with debounce.
   useEffect(() => {
@@ -72,6 +76,7 @@ function App() {
           name: searchTerm.trim() ? `Results: ${searchTerm.trim()}` : selectedPlaylistType.name,
           images: mappedTracks[0]?.track?.album?.images || [],
           tracks: { total: mappedTracks.length },
+          color: selectedPlaylistType.color,
         }))
       } catch (error) {
         if (isCurrentRequest) {
@@ -83,6 +88,7 @@ function App() {
             name: searchTerm.trim() ? `Results: ${searchTerm.trim()}` : selectedPlaylistType.name,
             images: [],
             tracks: { total: 0 },
+            color: selectedPlaylistType.color,
           }))
         }
       } finally {
@@ -105,8 +111,36 @@ function App() {
     setIsSidebarOpen(false)
   }
 
+  // Play a track
+  const handlePlayTrack = (track, index) => {
+    setCurrentTrack(track)
+    setCurrentTrackIndex(index)
+  }
+
+  // Play next track
+  const handleNextTrack = () => {
+    if (tracks.length === 0) return
+    const nextIndex = (currentTrackIndex + 1) % tracks.length
+    const nextTrack = tracks[nextIndex]?.track
+    if (nextTrack?.preview_url) {
+      setCurrentTrack(nextTrack)
+      setCurrentTrackIndex(nextIndex)
+    }
+  }
+
+  // Play previous track
+  const handlePreviousTrack = () => {
+    if (tracks.length === 0) return
+    const prevIndex = currentTrackIndex <= 0 ? tracks.length - 1 : currentTrackIndex - 1
+    const prevTrack = tracks[prevIndex]?.track
+    if (prevTrack?.preview_url) {
+      setCurrentTrack(prevTrack)
+      setCurrentTrackIndex(prevIndex)
+    }
+  }
+
   return (
-    <div className="min-h-screen overflow-x-hidden bg-neutral-950 text-white">
+    <div className="min-h-screen overflow-x-hidden bg-[#121212] text-white pb-[90px]">
       <Sidebar
         profile={null}
         playlists={PLAYLIST_TYPES}
@@ -115,7 +149,7 @@ function App() {
         isOpen={isSidebarOpen}
         onToggle={() => setIsSidebarOpen((current) => !current)}
       />
-      <div className="md:ml-[320px]">
+      <div className="md:ml-[280px]">
         <Body
           selectedPlaylist={selectedPlaylist}
           tracks={tracks}
@@ -125,8 +159,15 @@ function App() {
           playlists={PLAYLIST_TYPES}
           selectedPlaylistId={selectedPlaylistType?.id}
           onSelectPlaylist={handleSelectPlaylistType}
+          onPlayTrack={handlePlayTrack}
+          currentTrackId={currentTrack?.id}
         />
       </div>
+      <Player 
+        track={currentTrack} 
+        onNext={handleNextTrack}
+        onPrevious={handlePreviousTrack}
+      />
     </div>
   )
 }

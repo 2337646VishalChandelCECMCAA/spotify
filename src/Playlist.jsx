@@ -1,5 +1,3 @@
-import { useEffect, useRef, useState } from 'react'
-
 const formatDuration = (durationMs) => {
   if (!durationMs) {
     return '--:--'
@@ -11,229 +9,121 @@ const formatDuration = (durationMs) => {
   return `${minutes}:${seconds}`
 }
 
-function Playlist({ tracks }) {
-  const [playingTrackId, setPlayingTrackId] = useState(null)
-  const [isPlayerOpen, setIsPlayerOpen] = useState(false)
-  const [activeTrack, setActiveTrack] = useState(null)
-  const audioRef = useRef(null)
-  const playerOverlayRef = useRef(null)
+// Icons
+const PlayIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
+    <path d="M8 5.14v14l11-7-11-7z" />
+  </svg>
+)
 
-  const requestElementFullscreen = async (element) => {
-    if (!element || document.fullscreenElement) {
-      return
-    }
+const PauseIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
+    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+  </svg>
+)
 
-    try {
-      await element.requestFullscreen()
-    } catch (error) {
-      console.error('Failed to enter fullscreen:', error)
-    }
-  }
+const EqualizerIcon = () => (
+  <svg viewBox="0 0 16 16" className="h-4 w-4" fill="#1db954">
+    <rect x="2" y="4" width="2" height="8" className="animate-pulse-slow" />
+    <rect x="5" y="2" width="2" height="12" className="animate-pulse-slow" style={{ animationDelay: '0.2s' }} />
+    <rect x="8" y="5" width="2" height="6" className="animate-pulse-slow" style={{ animationDelay: '0.4s' }} />
+    <rect x="11" y="3" width="2" height="10" className="animate-pulse-slow" style={{ animationDelay: '0.6s' }} />
+  </svg>
+)
 
-  const exitElementFullscreen = async () => {
-    if (!document.fullscreenElement) {
-      return
-    }
-
-    try {
-      await document.exitFullscreen()
-    } catch (error) {
-      console.error('Failed to exit fullscreen:', error)
-    }
-  }
-
-  // Stop audio when component unmounts.
-  useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) {
-      return
-    }
-
-    return () => {
-      audio.pause()
-      audio.currentTime = 0
-    }
-  }, [])
-
-  // Open full-screen player and play selected track preview.
-  const openFullScreenPlayer = (track) => {
-    if (!track?.preview_url) {
-      return
-    }
-
-    setActiveTrack(track)
-    setIsPlayerOpen(true)
-    setPlayingTrackId(track.id)
-  }
-
-  const closePlayer = () => {
-    const audio = audioRef.current
-    if (audio) {
-      audio.pause()
-      audio.currentTime = 0
-    }
-    setIsPlayerOpen(false)
-    setPlayingTrackId(null)
-    exitElementFullscreen()
-  }
-
-  // Lock page scroll when full-screen player is open.
-  useEffect(() => {
-    document.body.style.overflow = isPlayerOpen ? 'hidden' : ''
-    return () => {
-      document.body.style.overflow = ''
-    }
-  }, [isPlayerOpen])
-
-  // Open/close browser fullscreen with the player overlay.
-  useEffect(() => {
-    if (isPlayerOpen) {
-      requestElementFullscreen(playerOverlayRef.current)
-    } else {
-      exitElementFullscreen()
-    }
-  }, [isPlayerOpen])
-
-  // Close player when user exits fullscreen with ESC.
-  useEffect(() => {
-    const onFullscreenChange = () => {
-      if (!document.fullscreenElement && isPlayerOpen) {
-        setIsPlayerOpen(false)
-        setPlayingTrackId(null)
-      }
-    }
-
-    document.addEventListener('fullscreenchange', onFullscreenChange)
-    return () => {
-      document.removeEventListener('fullscreenchange', onFullscreenChange)
-    }
-  }, [isPlayerOpen])
-
-  // Reset play state when audio finishes.
-  useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) {
-      return
-    }
-
-    const onEnded = () => setPlayingTrackId(null)
-    const onPause = () => setPlayingTrackId(null)
-    const onPlay = () => setPlayingTrackId(activeTrack?.id || null)
-
-    audio.addEventListener('ended', onEnded)
-    audio.addEventListener('pause', onPause)
-    audio.addEventListener('play', onPlay)
-
-    return () => {
-      audio.removeEventListener('ended', onEnded)
-      audio.removeEventListener('pause', onPause)
-      audio.removeEventListener('play', onPlay)
-    }
-  }, [activeTrack?.id])
-
+function Playlist({ tracks, onPlayTrack, currentTrackId }) {
   if (!tracks.length) {
     return (
-      <p className="rounded-xl border border-white/10 bg-neutral-900/70 p-4 text-sm text-neutral-300">
-        No tracks available for this playlist.
-      </p>
+      <div className="py-8 text-center text-[#a7a7a7]">
+        <p>No tracks available for this playlist.</p>
+      </div>
     )
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-0.5">
       {tracks.map((item, index) => {
         const track = item.track
         if (!track) {
           return null
         }
 
+        const isCurrentTrack = currentTrackId === track.id
+        const hasPreview = !!track.preview_url
+
         return (
           <div
-            className="group grid grid-cols-[48px_1fr] items-center gap-3 rounded-xl border border-white/10 bg-neutral-900/60 p-2.5 transition hover:border-white/20 hover:bg-neutral-800/80 sm:grid-cols-[56px_1fr_auto]"
-            key={track.id || `${track.name}-${item.added_at}`}
+            className={`track-row group grid grid-cols-[16px_4fr_2fr_minmax(80px,1fr)] items-center gap-4 rounded-md px-4 py-2 ${
+              isCurrentTrack ? 'bg-[#ffffff1a]' : ''
+            }`}
+            key={track.id || `${track.name}-${index}`}
+            onClick={() => hasPreview && onPlayTrack(track, index)}
+            style={{ cursor: hasPreview ? 'pointer' : 'default' }}
           >
-            <img
-              src={track.album?.images?.[2]?.url || track.album?.images?.[0]?.url}
-              alt={track.album?.name || 'Album'}
-              className="h-12 w-12 rounded-lg object-cover sm:h-14 sm:w-14"
-            />
-            <div className="min-w-0">
-              <p className="truncate text-xs font-semibold text-white sm:text-sm">
-                {index + 1}. {track.name}
-              </p>
-              <p className="truncate text-xs text-neutral-400">
-                {track.artists?.map((artist) => artist.name).join(', ') || 'Unknown Artist'}
-              </p>
-              <p className="truncate text-[11px] text-neutral-500">
-                {track.album?.name || 'Unknown Album'} • {formatDuration(track.duration_ms)}
+            {/* Track Number / Play Button */}
+            <div className="flex items-center justify-center">
+              {isCurrentTrack ? (
+                <EqualizerIcon />
+              ) : (
+                <>
+                  <span className={`track-number text-sm ${isCurrentTrack ? 'text-[#1db954]' : 'text-[#a7a7a7]'}`}>
+                    {index + 1}
+                  </span>
+                  {hasPreview && (
+                    <button className="track-play-icon text-white">
+                      <PlayIcon />
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+
+            {/* Track Info */}
+            <div className="flex items-center gap-3 min-w-0">
+              <img
+                src={track.album?.images?.[2]?.url || track.album?.images?.[0]?.url}
+                alt={track.album?.name || 'Album'}
+                className="h-10 w-10 flex-shrink-0 rounded object-cover"
+              />
+              <div className="min-w-0">
+                <p className={`truncate text-base font-normal ${
+                  isCurrentTrack ? 'text-[#1db954]' : 'text-white'
+                }`}>
+                  {track.name}
+                </p>
+                <p className="truncate text-sm text-[#a7a7a7] hover:text-white hover:underline">
+                  {track.artists?.map((artist) => artist.name).join(', ') || 'Unknown Artist'}
+                </p>
+              </div>
+            </div>
+
+            {/* Album Name */}
+            <div className="hidden min-w-0 md:block">
+              <p className="truncate text-sm text-[#a7a7a7] hover:text-white hover:underline">
+                {track.album?.name || 'Unknown Album'}
               </p>
             </div>
-            <div className="col-span-2 mt-1 flex flex-wrap items-center gap-2 sm:col-span-1 sm:mt-0 sm:justify-end">
-              {track.preview_url ? (
-                <button
-                  className="rounded-full bg-green-500 px-3 py-1.5 text-[11px] font-semibold text-black transition hover:bg-green-400 sm:px-4 sm:py-2 sm:text-xs"
-                  onClick={() => openFullScreenPlayer(track)}
-                >
-                  {playingTrackId === track.id && isPlayerOpen ? 'Playing' : 'Play'}
-                </button>
-              ) : (
-                <span className="text-xs text-neutral-500">No preview</span>
-              )}
-              {track.external_url ? (
+
+            {/* Duration & Actions */}
+            <div className="flex items-center justify-end gap-4">
+              {track.external_url && (
                 <a
                   href={track.external_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-full border border-white/15 px-3 py-1.5 text-[11px] text-neutral-300 transition hover:bg-white/10"
+                  className="hidden text-xs text-[#a7a7a7] opacity-0 transition group-hover:opacity-100 hover:text-white hover:underline"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   Open
                 </a>
-              ) : null}
+              )}
+              <span className="text-sm text-[#a7a7a7]">
+                {formatDuration(track.duration_ms)}
+              </span>
             </div>
           </div>
         )
       })}
-
-      {isPlayerOpen && activeTrack ? (
-        <div ref={playerOverlayRef} className="fixed inset-0 z-50 grid place-items-center bg-black/90 p-4">
-          <div className="max-h-[95vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-white/10 bg-gradient-to-b from-neutral-900 to-black p-4 shadow-2xl sm:p-5 md:p-8">
-            <div className="mb-5 flex items-center justify-between">
-              <p className="text-xs uppercase tracking-[0.18em] text-neutral-400">Now Playing</p>
-              <button
-                className="rounded-full border border-white/20 px-3 py-1 text-xs text-neutral-300 transition hover:bg-white/10"
-                onClick={closePlayer}
-              >
-                Close
-              </button>
-            </div>
-
-            <div className="mb-6 flex flex-col items-center gap-4 text-center">
-              <img
-                src={activeTrack.album?.images?.[0]?.url || activeTrack.album?.images?.[2]?.url}
-                alt={activeTrack.album?.name || 'Album'}
-                className="h-44 w-44 rounded-2xl object-cover shadow-2xl sm:h-56 sm:w-56 md:h-72 md:w-72"
-              />
-              <div>
-                <h3 className="text-xl font-bold text-white sm:text-2xl md:text-3xl">{activeTrack.name}</h3>
-                <p className="mt-1 text-sm text-neutral-400">
-                  {activeTrack.artists?.map((artist) => artist.name).join(', ') || 'Unknown Artist'}
-                </p>
-                <p className="mt-1 text-xs text-neutral-500">{activeTrack.album?.name || 'Unknown Album'}</p>
-              </div>
-            </div>
-
-            <audio
-              ref={audioRef}
-              src={activeTrack.preview_url}
-              controls
-              autoPlay
-              className="w-full"
-            >
-              <track kind="captions" />
-            </audio>
-          </div>
-        </div>
-      ) : null}
     </div>
   )
 }

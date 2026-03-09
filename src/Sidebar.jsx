@@ -1,63 +1,153 @@
+// Icons
+const HomeIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
+    <path d="M12.5 3.247a1 1 0 0 0-1 0L4 7.577V20h4.5v-6a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v6H20V7.577l-7.5-4.33zm-2-1.732a3 3 0 0 1 3 0l7.5 4.33a2 2 0 0 1 1 1.732V21a1 1 0 0 1-1 1h-6.5a1 1 0 0 1-1-1v-6h-3v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.577a2 2 0 0 1 1-1.732l7.5-4.33z" />
+  </svg>
+)
+
+const SearchIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
+    <path d="M10.533 1.279c-5.18 0-9.407 4.14-9.407 9.279s4.226 9.279 9.407 9.279c2.234 0 4.29-.77 5.907-2.058l4.353 4.353a1 1 0 1 0 1.414-1.414l-4.344-4.344a9.157 9.157 0 0 0 2.077-5.816c0-5.14-4.226-9.28-9.407-9.28zm-7.407 9.28c0-4.006 3.302-7.28 7.407-7.28s7.407 3.274 7.407 7.28-3.302 7.279-7.407 7.279-7.407-3.273-7.407-7.28z" />
+  </svg>
+)
+
+const LibraryIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
+    <path d="M3 22a1 1 0 0 1-1-1V3a1 1 0 0 1 2 0v18a1 1 0 0 1-1 1zM15.5 2.134A1 1 0 0 0 14 3v18a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V6.464a1 1 0 0 0-.5-.866l-6-3.464zM9 2a1 1 0 0 0-1 1v18a1 1 0 1 0 2 0V3a1 1 0 0 0-1-1z" />
+  </svg>
+)
+
+const PlusIcon = () => (
+  <svg viewBox="0 0 16 16" fill="currentColor" className="h-4 w-4">
+    <path d="M15.25 8a.75.75 0 0 1-.75.75H8.75v5.75a.75.75 0 0 1-1.5 0V8.75H1.5a.75.75 0 0 1 0-1.5h5.75V1.5a.75.75 0 0 1 1.5 0v5.75h5.75a.75.75 0 0 1 .75.75z" />
+  </svg>
+)
+
+const SpotifyLogo = () => (
+  <svg viewBox="0 0 24 24" className="h-8 w-8 text-white">
+    <path fill="currentColor" d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+  </svg>
+)
+
+const MenuIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
+    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+  </svg>
+)
+
+const CloseIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
+    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+  </svg>
+)
+
 function Sidebar({ profile, playlists, selectedPlaylistId, onSelectPlaylist, isOpen, onToggle }) {
   return (
-    <aside className="sticky top-0 z-40 border-b border-white/10 bg-black/95 px-4 py-4 backdrop-blur md:fixed md:inset-y-0 md:left-0 md:w-[320px] md:border-b-0 md:border-r md:border-white/10 md:bg-black md:px-5 md:py-6 md:backdrop-blur-none">
-      <div className="mb-5 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 text-xl font-extrabold tracking-tight">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-black">
-            ♪
-          </span>
-          Spotify Clone
+    <>
+      {/* Mobile Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-between bg-[#121212] px-4 md:hidden">
+        <div className="flex items-center gap-2">
+          <SpotifyLogo />
+          <span className="text-lg font-bold">Spotify</span>
         </div>
         <button
           onClick={onToggle}
-          className="rounded-lg border border-white/20 px-3 py-1.5 text-xs text-neutral-200 transition hover:bg-white/10 md:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-white/10"
         >
-          {isOpen ? 'Hide' : 'Show'}
+          {isOpen ? <CloseIcon /> : <MenuIcon />}
         </button>
-      </div>
+      </header>
 
-      <div className={`${isOpen ? 'block' : 'hidden'} md:block`}>
-        <div className="mb-5 rounded-2xl border border-white/10 bg-gradient-to-br from-neutral-900 to-neutral-800 p-4">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-neutral-400">Now browsing</p>
-          <div className="flex items-center gap-3">
-            {profile?.images?.[0]?.url ? (
-              <img
-                src={profile.images[0].url}
-                alt={profile.display_name || 'User profile'}
-                className="h-11 w-11 rounded-full object-cover"
-              />
-            ) : (
-              <div className="grid h-11 w-11 place-items-center rounded-full bg-neutral-700">♪</div>
-            )}
-            <div>
-              <p className="text-sm font-semibold text-white">Guest Listener</p>
-              <p className="text-xs text-neutral-400">Home Playlists</p>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/60 md:hidden" 
+          onClick={onToggle}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-[280px] transform bg-black transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        md:translate-x-0 md:top-0 md:z-30
+      `}>
+        <div className="flex h-full flex-col gap-2 p-2">
+          {/* Navigation Section */}
+          <div className="rounded-lg bg-[#121212] p-3 pt-4">
+            <div className="mb-6 hidden items-center gap-1 px-3 md:flex">
+              <SpotifyLogo />
+              <span className="ml-1 text-xl font-bold tracking-tight">Spotify</span>
+            </div>
+            
+            <nav className="space-y-2">
+              <a href="#" className="flex items-center gap-4 px-3 py-2 text-[#b3b3b3] transition hover:text-white">
+                <HomeIcon />
+                <span className="font-bold">Home</span>
+              </a>
+              <a href="#" className="flex items-center gap-4 px-3 py-2 text-[#b3b3b3] transition hover:text-white">
+                <SearchIcon />
+                <span className="font-bold">Search</span>
+              </a>
+            </nav>
+          </div>
+
+          {/* Library Section */}
+          <div className="flex flex-1 flex-col rounded-lg bg-[#121212] overflow-hidden">
+            <div className="flex items-center justify-between p-4 pb-0">
+              <button className="flex items-center gap-3 text-[#b3b3b3] transition hover:text-white">
+                <LibraryIcon />
+                <span className="font-bold">Your Library</span>
+              </button>
+              <button className="flex h-8 w-8 items-center justify-center rounded-full text-[#b3b3b3] transition hover:bg-[#1a1a1a] hover:text-white">
+                <PlusIcon />
+              </button>
+            </div>
+
+            {/* Filter Pills */}
+            <div className="flex gap-2 px-4 py-3">
+              <button className="nav-pill active">Playlists</button>
+            </div>
+
+            {/* Playlist List */}
+            <div className="spotify-scroll flex-1 overflow-y-auto px-2 pb-2">
+              <ul className="space-y-0.5">
+                {playlists.map((playlist) => (
+                  <li key={playlist.id}>
+                    <button
+                      className={`library-item flex w-full items-center gap-3 text-left transition ${
+                        selectedPlaylistId === playlist.id ? 'bg-[#232323]' : ''
+                      }`}
+                      onClick={() => onSelectPlaylist(playlist)}
+                    >
+                      <div 
+                        className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded text-lg"
+                        style={{ backgroundColor: playlist.color || '#282828' }}
+                      >
+                        ♪
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className={`truncate text-sm font-medium ${
+                          selectedPlaylistId === playlist.id ? 'text-white' : 'text-white'
+                        }`}>
+                          {playlist.name}
+                        </p>
+                        <p className="truncate text-xs text-[#b3b3b3]">
+                          Playlist • {playlist.mood}
+                        </p>
+                      </div>
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
+      </aside>
 
-        <h3 className="mb-3 text-xs font-semibold uppercase tracking-widest text-neutral-400">Playlist Types</h3>
-        <div className="sidebar-scroll max-h-[50vh] overflow-y-auto pr-1 md:max-h-[calc(100vh-220px)]">
-          <ul className="space-y-2">
-            {playlists.map((playlist) => (
-              <li key={playlist.id}>
-                <button
-                  className={`w-full rounded-xl border px-3 py-2.5 text-left text-sm font-medium transition ${
-                    selectedPlaylistId === playlist.id
-                      ? 'border-green-500/40 bg-green-500/20 text-white shadow-[0_0_0_1px_rgba(34,197,94,0.2)]'
-                      : 'border-white/10 bg-neutral-900/60 text-neutral-300 hover:bg-neutral-800 hover:text-white'
-                  }`}
-                  onClick={() => onSelectPlaylist(playlist)}
-                >
-                  <p className="line-clamp-1">{playlist.name}</p>
-                  <p className="mt-0.5 line-clamp-1 text-xs text-neutral-400">{playlist.mood}</p>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </aside>
+      {/* Mobile spacing */}
+      <div className="h-16 md:hidden" />
+    </>
   )
 }
 

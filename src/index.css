@@ -1,14 +1,21 @@
 @import 'tailwindcss';
 
 :root {
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
-    sans-serif;
+  font-family: 'Circular', Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --spotify-green: #1db954;
+  --spotify-green-light: #1ed760;
+  --spotify-black: #121212;
+  --spotify-dark: #181818;
+  --spotify-card: #282828;
+  --spotify-hover: #2a2a2a;
+  --spotify-text: #b3b3b3;
+  --spotify-white: #ffffff;
 }
 
 * {
@@ -18,28 +25,258 @@
 body {
   margin: 0;
   min-width: 320px;
-  background: #121212;
+  background: var(--spotify-black);
+  color: var(--spotify-white);
 }
 
 #root {
   min-height: 100vh;
 }
 
-.sidebar-scroll {
+/* Custom scrollbar for Spotify look */
+.spotify-scroll {
   scrollbar-width: thin;
-  scrollbar-color: #22c55e #171717;
+  scrollbar-color: hsla(0, 0%, 100%, 0.3) transparent;
 }
 
-.sidebar-scroll::-webkit-scrollbar {
-  width: 8px;
+.spotify-scroll::-webkit-scrollbar {
+  width: 12px;
 }
 
-.sidebar-scroll::-webkit-scrollbar-track {
-  background: #171717;
-  border-radius: 999px;
+.spotify-scroll::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.sidebar-scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(#22c55e, #16a34a);
-  border-radius: 999px;
+.spotify-scroll::-webkit-scrollbar-thumb {
+  background: hsla(0, 0%, 100%, 0.3);
+  border-radius: 6px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+.spotify-scroll::-webkit-scrollbar-thumb:hover {
+  background: hsla(0, 0%, 100%, 0.5);
+  background-clip: padding-box;
+}
+
+/* Hide scrollbar until hover */
+.spotify-scroll-hidden {
+  scrollbar-width: none;
+}
+
+.spotify-scroll-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.spotify-scroll-hidden:hover {
+  scrollbar-width: thin;
+}
+
+.spotify-scroll-hidden:hover::-webkit-scrollbar {
+  display: block;
+}
+
+/* Playlist card hover effect */
+.playlist-card {
+  transition: background-color 0.3s ease;
+}
+
+.playlist-card:hover {
+  background-color: var(--spotify-hover);
+}
+
+.playlist-card:hover .play-button {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.play-button {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.3s ease;
+}
+
+/* Track row hover */
+.track-row {
+  transition: background-color 0.2s ease;
+}
+
+.track-row:hover {
+  background-color: hsla(0, 0%, 100%, 0.1);
+}
+
+.track-row:hover .track-number {
+  display: none;
+}
+
+.track-row:hover .track-play-icon {
+  display: flex;
+}
+
+.track-play-icon {
+  display: none;
+}
+
+/* Gradient header for playlist */
+.playlist-header-gradient {
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
+}
+
+/* Player progress bar styling */
+.player-progress {
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: #4d4d4d;
+  cursor: pointer;
+}
+
+.player-progress::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--spotify-white);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.player-progress:hover::-webkit-slider-thumb {
+  opacity: 1;
+}
+
+.player-progress::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+}
+
+/* Volume slider */
+.volume-slider {
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: #4d4d4d;
+  cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--spotify-white);
+  cursor: pointer;
+}
+
+/* Animations */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-pulse-slow {
+  animation: pulse 2s infinite;
+}
+
+/* Spotify button styles */
+.spotify-btn {
+  background-color: var(--spotify-green);
+  color: black;
+  font-weight: 700;
+  padding: 12px 32px;
+  border-radius: 500px;
+  transition: all 0.2s ease;
+  transform: scale(1);
+}
+
+.spotify-btn:hover {
+  background-color: var(--spotify-green-light);
+  transform: scale(1.04);
+}
+
+.spotify-btn:active {
+  transform: scale(0.98);
+}
+
+/* Icon button */
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  color: var(--spotify-text);
+}
+
+.icon-btn:hover {
+  color: var(--spotify-white);
+  transform: scale(1.06);
+}
+
+.icon-btn.active {
+  color: var(--spotify-green);
+}
+
+/* Nav pill buttons */
+.nav-pill {
+  padding: 8px 16px;
+  border-radius: 500px;
+  font-size: 14px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.07);
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.nav-pill:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.nav-pill.active {
+  background: white;
+  color: black;
+}
+
+/* Library item hover */
+.library-item {
+  padding: 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.library-item:hover {
+  background-color: var(--spotify-hover);
+}
+
+/* Now playing bar background */
+.now-playing-bar {
+  background: linear-gradient(180deg, #181818 0%, #000 100%);
+  border-top: 1px solid hsla(0, 0%, 100%, 0.1);
 }
