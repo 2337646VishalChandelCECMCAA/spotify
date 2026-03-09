@@ -156,32 +156,32 @@ function Player({ track, onNext, onPrevious }) {
 
   if (!track) {
     return (
-      <footer className="now-playing-bar fixed bottom-0 left-0 right-0 z-50 h-[90px] px-4">
-        <div className="mx-auto flex h-full max-w-screen-2xl items-center justify-between">
-          <div className="flex w-[30%] items-center gap-3">
-            <div className="h-14 w-14 rounded bg-[#282828]" />
-            <div>
+      <footer className="now-playing-bar fixed bottom-0 left-0 right-0 z-50 h-[72px] px-2 sm:h-[90px] sm:px-4">
+        <div className="mx-auto flex h-full max-w-screen-2xl items-center justify-between gap-2 sm:gap-4">
+          <div className="flex min-w-0 flex-1 items-center gap-2 sm:w-[30%] sm:flex-none sm:gap-3">
+            <div className="h-10 w-10 shrink-0 rounded bg-[#282828] sm:h-14 sm:w-14" />
+            <div className="min-w-0 hidden sm:block">
               <div className="h-3 w-24 rounded bg-[#282828]" />
               <div className="mt-2 h-2 w-16 rounded bg-[#282828]" />
             </div>
           </div>
-          <div className="flex w-[40%] flex-col items-center">
-            <div className="flex items-center gap-4">
-              <button disabled className="icon-btn opacity-50"><ShuffleIcon /></button>
+          <div className="flex flex-1 flex-col items-center sm:w-[40%] sm:flex-none">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <button disabled className="icon-btn hidden opacity-50 sm:flex"><ShuffleIcon /></button>
               <button disabled className="icon-btn opacity-50"><SkipBackIcon /></button>
               <button disabled className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
                 <PlayIcon />
               </button>
               <button disabled className="icon-btn opacity-50"><SkipForwardIcon /></button>
-              <button disabled className="icon-btn opacity-50"><RepeatIcon /></button>
+              <button disabled className="icon-btn hidden opacity-50 sm:flex"><RepeatIcon /></button>
             </div>
-            <div className="mt-2 flex w-full max-w-[600px] items-center gap-2">
-              <span className="text-[11px] text-[#a7a7a7]">0:00</span>
+            <div className="mt-1 flex w-full max-w-[600px] items-center gap-2 sm:mt-2">
+              <span className="hidden text-[11px] text-[#a7a7a7] sm:inline">0:00</span>
               <div className="h-1 flex-1 rounded-full bg-[#4d4d4d]" />
-              <span className="text-[11px] text-[#a7a7a7]">0:00</span>
+              <span className="hidden text-[11px] text-[#a7a7a7] sm:inline">0:00</span>
             </div>
           </div>
-          <div className="flex w-[30%] justify-end">
+          <div className="hidden items-center justify-end sm:flex sm:w-[30%]">
             <div className="flex items-center gap-3">
               <button disabled className="icon-btn opacity-50"><QueueIcon /></button>
               <button disabled className="icon-btn opacity-50"><VolumeIcon level={0.7} /></button>
@@ -194,27 +194,27 @@ function Player({ track, onNext, onPrevious }) {
   }
 
   return (
-    <footer className="now-playing-bar fixed bottom-0 left-0 right-0 z-50 h-[90px] px-4">
+    <footer className="now-playing-bar fixed bottom-0 left-0 right-0 z-50 h-[72px] px-2 sm:h-[90px] sm:px-4">
       <audio ref={audioRef} src={track.preview_url} />
       
-      <div className="mx-auto flex h-full max-w-screen-2xl items-center justify-between">
+      <div className="mx-auto flex h-full max-w-screen-2xl items-center justify-between gap-2 sm:gap-4">
         {/* Now Playing Info */}
-        <div className="flex w-[30%] min-w-[180px] items-center gap-3">
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:w-[30%] sm:min-w-[180px] sm:flex-none sm:gap-3">
           <img
             src={track.album?.images?.[0]?.url || track.album?.images?.[2]?.url}
             alt={track.album?.name}
-            className="h-14 w-14 rounded shadow-lg"
+            className="h-10 w-10 shrink-0 rounded shadow-lg sm:h-14 sm:w-14"
           />
-          <div className="min-w-0">
-            <p className="truncate text-sm font-normal text-white hover:underline cursor-pointer">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-xs font-normal text-white hover:underline cursor-pointer sm:text-sm">
               {track.name}
             </p>
-            <p className="truncate text-[11px] text-[#a7a7a7] hover:text-white hover:underline cursor-pointer">
+            <p className="truncate text-[10px] text-[#a7a7a7] hover:text-white hover:underline cursor-pointer sm:text-[11px]">
               {track.artists?.map(a => a.name).join(', ')}
             </p>
           </div>
           <button 
-            className={`icon-btn ml-2 ${isLiked ? 'active' : ''}`}
+            className={`icon-btn hidden sm:flex ${isLiked ? 'active' : ''}`}
             onClick={() => setIsLiked(!isLiked)}
           >
             <HeartIcon filled={isLiked} />
@@ -222,10 +222,10 @@ function Player({ track, onNext, onPrevious }) {
         </div>
 
         {/* Player Controls */}
-        <div className="flex w-[40%] max-w-[722px] flex-col items-center">
-          <div className="mb-2 flex items-center gap-4">
+        <div className="flex flex-1 flex-col items-center sm:w-[40%] sm:max-w-[722px] sm:flex-none">
+          <div className="mb-1 flex items-center gap-3 sm:mb-2 sm:gap-4">
             <button 
-              className={`icon-btn ${isShuffle ? 'active' : ''}`}
+              className={`icon-btn hidden sm:flex ${isShuffle ? 'active' : ''}`}
               onClick={() => setIsShuffle(!isShuffle)}
             >
               <ShuffleIcon active={isShuffle} />
@@ -243,7 +243,7 @@ function Player({ track, onNext, onPrevious }) {
               <SkipForwardIcon />
             </button>
             <button 
-              className={`icon-btn ${isRepeat ? 'active' : ''}`}
+              className={`icon-btn hidden sm:flex ${isRepeat ? 'active' : ''}`}
               onClick={() => setIsRepeat(!isRepeat)}
             >
               <RepeatIcon active={isRepeat} />
@@ -251,7 +251,7 @@ function Player({ track, onNext, onPrevious }) {
           </div>
           
           <div className="flex w-full items-center gap-2">
-            <span className="w-10 text-right text-[11px] text-[#a7a7a7]">
+            <span className="hidden w-10 text-right text-[11px] text-[#a7a7a7] sm:inline">
               {formatTime(currentTime)}
             </span>
             <div className="group relative flex-1">
@@ -267,14 +267,14 @@ function Player({ track, onNext, onPrevious }) {
                 }}
               />
             </div>
-            <span className="w-10 text-[11px] text-[#a7a7a7]">
+            <span className="hidden w-10 text-[11px] text-[#a7a7a7] sm:inline">
               {formatTime(duration)}
             </span>
           </div>
         </div>
 
-        {/* Volume & Other Controls */}
-        <div className="flex w-[30%] min-w-[180px] items-center justify-end gap-3">
+        {/* Volume & Other Controls - Hidden on mobile */}
+        <div className="hidden items-center justify-end gap-3 sm:flex sm:w-[30%] sm:min-w-[180px]">
           <button className="icon-btn">
             <QueueIcon />
           </button>
