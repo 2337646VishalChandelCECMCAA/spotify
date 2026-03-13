@@ -40,15 +40,9 @@ const mapApiTracks = (results) =>
   }))
 
 function App() {
-  const [selectedPlaylistType, setSelectedPlaylistType] = useState(PLAYLIST_TYPES[0])
+  const [selectedPlaylistType, setSelectedPlaylistType] = useState(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [selectedPlaylist, setSelectedPlaylist] = useState({
-    id: PLAYLIST_TYPES[0].id,
-    name: PLAYLIST_TYPES[0].name,
-    images: [],
-    tracks: { total: 0 },
-    color: PLAYLIST_TYPES[0].color,
-  })
+  const [selectedPlaylist, setSelectedPlaylist] = useState(null)
   const [tracks, setTracks] = useState([])
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -58,7 +52,15 @@ function App() {
   // Load tracks for selected playlist type or search query with debounce.
   useEffect(() => {
     let isCurrentRequest = true
-    const query = searchTerm.trim() || selectedPlaylistType.query
+    const trimmedSearchTerm = searchTerm.trim()
+    const isSearchMode = Boolean(trimmedSearchTerm)
+    const query = isSearchMode ? trimmedSearchTerm : selectedPlaylistType?.query
+
+    if (!query) {
+      setTracks([])
+      setLoading(false)
+      return
+    }
 
     const searchTimer = setTimeout(async () => {
       setLoading(true)
@@ -68,27 +70,51 @@ function App() {
           return
         }
 
+        const playlistMeta = isSearchMode
+          ? {
+              id: `search-${trimmedSearchTerm.toLowerCase().replace(/\s+/g, '-')}`,
+              name: `Results: ${trimmedSearchTerm}`,
+              color: '#282828',
+            }
+          : {
+              id: selectedPlaylistType?.id,
+              name: selectedPlaylistType?.name,
+              color: selectedPlaylistType?.color,
+            }
+
         const mappedTracks = mapApiTracks(response.data.results)
         setTracks(mappedTracks)
         setSelectedPlaylist((current) => ({
           ...current,
-          id: selectedPlaylistType.id,
-          name: searchTerm.trim() ? `Results: ${searchTerm.trim()}` : selectedPlaylistType.name,
+          id: playlistMeta.id,
+          name: playlistMeta.name,
           images: mappedTracks[0]?.track?.album?.images || [],
           tracks: { total: mappedTracks.length },
-          color: selectedPlaylistType.color,
+          color: playlistMeta.color,
         }))
       } catch (error) {
         if (isCurrentRequest) {
           console.error('Failed to load tracks:', error)
+          const playlistMeta = isSearchMode
+            ? {
+                id: `search-${trimmedSearchTerm.toLowerCase().replace(/\s+/g, '-')}`,
+                name: `Results: ${trimmedSearchTerm}`,
+                color: '#282828',
+              }
+            : {
+                id: selectedPlaylistType?.id,
+                name: selectedPlaylistType?.name,
+                color: selectedPlaylistType?.color,
+              }
+
           setTracks([])
           setSelectedPlaylist((current) => ({
             ...current,
-            id: selectedPlaylistType.id,
-            name: searchTerm.trim() ? `Results: ${searchTerm.trim()}` : selectedPlaylistType.name,
+            id: playlistMeta.id,
+            name: playlistMeta.name,
             images: [],
             tracks: { total: 0 },
-            color: selectedPlaylistType.color,
+            color: playlistMeta.color,
           }))
         }
       } finally {
@@ -107,6 +133,13 @@ function App() {
   // Change active playlist type from sidebar or home cards.
   const handleSelectPlaylistType = (playlistType) => {
     setSelectedPlaylistType(playlistType)
+    setSearchTerm('')
+    setIsSidebarOpen(false)
+  }
+
+  const handleHomeClick = () => {
+    setSelectedPlaylistType(null)
+    setSelectedPlaylist(null)
     setSearchTerm('')
     setIsSidebarOpen(false)
   }
@@ -140,28 +173,31 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#121212] text-white pb-[90px]">
-      <Sidebar
-        profile={null}
-        playlists={PLAYLIST_TYPES}
-        selectedPlaylistId={selectedPlaylistType?.id}
-        onSelectPlaylist={handleSelectPlaylistType}
-        isOpen={isSidebarOpen}
-        onToggle={() => setIsSidebarOpen((current) => !current)}
-      />
-      <div className="md:ml-[280px]">
-        <Body
-          selectedPlaylist={selectedPlaylist}
-          tracks={tracks}
-          loading={loading}
-          searchTerm={searchTerm}
-          onSearchTermChange={setSearchTerm}
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-black text-white p-2 pb-[72px] sm:pb-[90px]">
+      <div className="flex flex-1 min-h-0 min-w-0 gap-2 overflow-hidden">
+        <Sidebar
+          profile={null}
           playlists={PLAYLIST_TYPES}
           selectedPlaylistId={selectedPlaylistType?.id}
           onSelectPlaylist={handleSelectPlaylistType}
-          onPlayTrack={handlePlayTrack}
-          currentTrackId={currentTrack?.id}
+          isOpen={isSidebarOpen}
+          onToggle={() => setIsSidebarOpen((current) => !current)}
+          onHomeClick={handleHomeClick}
         />
+        <div className="flex-1 min-w-0 spotify-island flex flex-col relative overflow-y-auto spotify-scroll">
+          <Body
+            selectedPlaylist={selectedPlaylist}
+            tracks={tracks}
+            loading={loading}
+            searchTerm={searchTerm}
+            onSearchTermChange={setSearchTerm}
+            playlists={PLAYLIST_TYPES}
+            selectedPlaylistId={selectedPlaylistType?.id}
+            onSelectPlaylist={handleSelectPlaylistType}
+            onPlayTrack={handlePlayTrack}
+            currentTrackId={currentTrack?.id}
+          />
+        </div>
       </div>
       <Player 
         track={currentTrack} 

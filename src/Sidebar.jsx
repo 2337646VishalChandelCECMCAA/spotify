@@ -41,7 +41,7 @@ const CloseIcon = () => (
   </svg>
 )
 
-function Sidebar({ profile, playlists, selectedPlaylistId, onSelectPlaylist, isOpen, onToggle }) {
+function Sidebar({ profile, playlists, selectedPlaylistId, onSelectPlaylist, isOpen, onToggle, onHomeClick }) {
   return (
     <>
       {/* Mobile Header */}
@@ -66,46 +66,62 @@ function Sidebar({ profile, playlists, selectedPlaylistId, onSelectPlaylist, isO
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - Desktop Layout (Islands) / Mobile Drawer */}
       <aside className={`
-        fixed inset-y-0 left-0 z-50 w-[280px] transform bg-black transition-transform duration-300 ease-in-out
+        fixed inset-y-0 left-0 z-50 w-[280px] transform transition-transform duration-300 ease-in-out
+        bg-black md:bg-transparent
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        md:translate-x-0 md:top-0 md:z-30
+        md:relative md:translate-x-0 md:top-0 md:z-30 md:flex md:flex-col md:h-full md:w-[80px] lg:w-[280px]
       `}>
-        <div className="flex h-full flex-col gap-2 p-2">
+        <div className="flex flex-col h-full md:gap-2">
           {/* Navigation Section */}
-          <div className="rounded-lg bg-[#121212] p-3 pt-4">
-            <div className="mb-6 hidden items-center gap-1 px-3 md:flex">
+          <div className="spotify-island p-3 pt-4 bg-[#121212] lg:p-4">
+            <div className="mb-6 hidden items-center gap-1 px-3 lg:flex">
               <SpotifyLogo />
               <span className="ml-1 text-xl font-bold tracking-tight">Spotify</span>
             </div>
             
             <nav className="space-y-2">
-              <a href="#" className="flex items-center gap-4 px-3 py-2 text-[#b3b3b3] transition hover:text-white">
+              <a 
+                href="#" 
+                className="flex items-center gap-4 px-3 py-2 text-[#b3b3b3] transition duration-200 hover:text-white"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (onHomeClick) onHomeClick();
+                }}
+              >
                 <HomeIcon />
-                <span className="font-bold">Home</span>
+                <span className="font-bold hidden lg:block">Home</span>
               </a>
-              <a href="#" className="flex items-center gap-4 px-3 py-2 text-[#b3b3b3] transition hover:text-white">
+              <a 
+                href="#" 
+                className="flex items-center gap-4 px-3 py-2 text-[#b3b3b3] transition duration-200 hover:text-white"
+                onClick={(e) => {
+                  e.preventDefault();
+                  // Focus search input or trigger search view
+                  document.getElementById('song-search')?.focus();
+                }}
+              >
                 <SearchIcon />
-                <span className="font-bold">Search</span>
+                <span className="font-bold hidden lg:block">Search</span>
               </a>
             </nav>
           </div>
 
           {/* Library Section */}
-          <div className="flex flex-1 flex-col rounded-lg bg-[#121212] overflow-hidden">
+          <div className="flex flex-1 flex-col spotify-island overflow-hidden bg-[#121212]">
             <div className="flex items-center justify-between p-4 pb-0">
-              <button className="flex items-center gap-3 text-[#b3b3b3] transition hover:text-white">
+              <button className="flex items-center gap-3 text-[#b3b3b3] transition duration-200 hover:text-white w-full">
                 <LibraryIcon />
-                <span className="font-bold">Your Library</span>
+                <span className="font-bold hidden lg:block">Your Library</span>
               </button>
-              <button className="flex h-8 w-8 items-center justify-center rounded-full text-[#b3b3b3] transition hover:bg-[#1a1a1a] hover:text-white">
+              <button className="hidden lg:flex h-8 w-8 items-center justify-center rounded-full text-[#b3b3b3] transition duration-200 hover:bg-[#1a1a1a] hover:text-white">
                 <PlusIcon />
               </button>
             </div>
 
             {/* Filter Pills */}
-            <div className="flex gap-2 px-4 py-3">
+            <div className="hidden lg:flex gap-2 px-4 py-3">
               <button className="nav-pill active">Playlists</button>
             </div>
 
@@ -115,18 +131,28 @@ function Sidebar({ profile, playlists, selectedPlaylistId, onSelectPlaylist, isO
                 {playlists.map((playlist) => (
                   <li key={playlist.id}>
                     <button
-                      className={`library-item flex w-full items-center gap-3 text-left transition ${
-                        selectedPlaylistId === playlist.id ? 'bg-[#232323]' : ''
+                      className={`library-item group flex w-full items-center gap-3 text-left transition-colors duration-200 ${
+                        selectedPlaylistId === playlist.id ? 'bg-[#232323]' : 'hover:bg-[#1a1a1a]'
                       }`}
                       onClick={() => onSelectPlaylist(playlist)}
                     >
+                      <img 
+                        src={`https://picsum.photos/seed/${playlist.id}/48/48`}
+                        alt={playlist.name}
+                        className="h-12 w-12 flex-shrink-0 rounded object-cover"
+                        style={{ display: 'block' }} // Fallback if images fail
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
                       <div 
-                        className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded text-lg"
+                        className="hidden h-12 w-12 flex-shrink-0 items-center justify-center rounded text-lg text-white"
                         style={{ backgroundColor: playlist.color || '#282828' }}
                       >
                         ♪
                       </div>
-                      <div className="min-w-0 flex-1">
+                      <div className="min-w-0 flex-1 hidden lg:block">
                         <p className={`truncate text-sm font-medium ${
                           selectedPlaylistId === playlist.id ? 'text-white' : 'text-white'
                         }`}>

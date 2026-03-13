@@ -1,3 +1,5 @@
+import { useState } from "react"
+
 const formatDuration = (durationMs) => {
   if (!durationMs) {
     return '--:--'
@@ -53,8 +55,10 @@ function Playlist({ tracks, onPlayTrack, currentTrackId }) {
 
         return (
           <div
-            className={`track-row group grid grid-cols-[16px_4fr_2fr_minmax(80px,1fr)] items-center gap-4 rounded-md px-4 py-2 ${
-              isCurrentTrack ? 'bg-[#ffffff1a]' : ''
+            className={`track-row group grid grid-cols-[16px_4fr_2fr_minmax(80px,1fr)] items-center gap-4 rounded-md px-4 py-2 mx-2 my-0.5 ${
+              isCurrentTrack 
+                ? 'bg-[#ffffff1a]' 
+                : 'hover:bg-[#ffffff1a]'
             }`}
             key={track.id || `${track.name}-${index}`}
             onClick={() => hasPreview && onPlayTrack(track, index)}
@@ -79,19 +83,21 @@ function Playlist({ tracks, onPlayTrack, currentTrackId }) {
             </div>
 
             {/* Track Info */}
-            <div className="flex items-center gap-3 min-w-0">
-              <img
-                src={track.album?.images?.[2]?.url || track.album?.images?.[0]?.url}
-                alt={track.album?.name || 'Album'}
-                className="h-10 w-10 flex-shrink-0 rounded object-cover"
-              />
+            <div className="flex items-center gap-4 min-w-0">
+              <div className="relative overflow-hidden h-10 w-10 flex-shrink-0 bg-[#282828] mr-2">
+                <img
+                  src={track.album?.images?.[2]?.url || track.album?.images?.[0]?.url}
+                  alt={track.album?.name || 'Album'}
+                  className="h-full w-full object-cover"
+                />
+              </div>
               <div className="min-w-0">
                 <p className={`truncate text-base font-normal ${
                   isCurrentTrack ? 'text-[#1db954]' : 'text-white'
                 }`}>
                   {track.name}
                 </p>
-                <p className="truncate text-sm text-[#a7a7a7] hover:text-white hover:underline">
+                <p className="truncate text-sm text-[#a7a7a7] hover:text-white hover:underline transition-colors mt-0.5">
                   {track.artists?.map((artist) => artist.name).join(', ') || 'Unknown Artist'}
                 </p>
               </div>
@@ -99,25 +105,25 @@ function Playlist({ tracks, onPlayTrack, currentTrackId }) {
 
             {/* Album Name */}
             <div className="hidden min-w-0 md:block">
-              <p className="truncate text-sm text-[#a7a7a7] hover:text-white hover:underline">
+              <p className="truncate text-sm text-[#a7a7a7] group-hover:text-white transition-colors duration-200 hover:underline">
                 {track.album?.name || 'Unknown Album'}
               </p>
             </div>
 
             {/* Duration & Actions */}
-            <div className="flex items-center justify-end gap-4">
+            <div className="flex items-center justify-end gap-6 text-sm">
               {track.external_url && (
                 <a
                   href={track.external_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="hidden text-xs text-[#a7a7a7] opacity-0 transition group-hover:opacity-100 hover:text-white hover:underline"
+                  className="hidden text-xs font-semibold uppercase tracking-wider text-[#a7a7a7] opacity-0 transition-all duration-300 group-hover:opacity-100 hover:text-white hover:scale-105"
                   onClick={(e) => e.stopPropagation()}
                 >
                   Open
                 </a>
               )}
-              <span className="text-sm text-[#a7a7a7]">
+              <span className="text-[#a7a7a7] font-variant-numeric: tabular-nums">
                 {formatDuration(track.duration_ms)}
               </span>
             </div>

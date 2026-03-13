@@ -156,15 +156,15 @@ function Player({ track, onNext, onPrevious }) {
 
   if (!track) {
     return (
-      <footer className="now-playing-bar fixed bottom-0 left-0 right-0 z-50 h-[72px] px-2 sm:h-[90px] sm:px-4">
-        <div className="mx-auto flex h-full max-w-screen-2xl items-center justify-between gap-2 sm:gap-4">
-          <div className="flex min-w-0 flex-1 items-center gap-2 sm:w-[30%] sm:flex-none sm:gap-3">
-            <div className="h-10 w-10 shrink-0 rounded bg-[#282828] sm:h-14 sm:w-14" />
-            <div className="min-w-0 hidden sm:block">
-              <div className="h-3 w-24 rounded bg-[#282828]" />
-              <div className="mt-2 h-2 w-16 rounded bg-[#282828]" />
+      <footer className="fixed bottom-0 left-0 right-0 z-50 h-[72px] bg-black border-t border-[#282828] px-2 sm:h-[90px] sm:px-4 flex items-center">
+        <div className="mx-auto flex h-full w-full max-w-screen-2xl items-center justify-between gap-2 sm:gap-4">
+            <div className="flex min-w-0 flex-1 items-center gap-2 sm:w-[30%] sm:flex-none sm:gap-3">
+              <div className="h-10 w-10 shrink-0 rounded bg-white/5 sm:h-14 sm:w-14" />
+              <div className="min-w-0 hidden sm:block">
+                <div className="h-3 w-24 rounded bg-white/5" />
+                <div className="mt-2 h-2 w-16 rounded bg-white/5" />
+              </div>
             </div>
-          </div>
           <div className="flex flex-1 flex-col items-center sm:w-[40%] sm:flex-none">
             <div className="flex items-center gap-2 sm:gap-4">
               <button disabled className="icon-btn hidden opacity-50 sm:flex"><ShuffleIcon /></button>
@@ -194,18 +194,18 @@ function Player({ track, onNext, onPrevious }) {
   }
 
   return (
-    <footer className="now-playing-bar fixed bottom-0 left-0 right-0 z-50 h-[72px] px-2 sm:h-[90px] sm:px-4">
+    <footer className="fixed bottom-0 left-0 right-0 z-50 h-[72px] bg-black border-t border-[#282828] px-2 sm:h-[90px] sm:px-4 flex items-center">
       <audio ref={audioRef} src={track.preview_url} />
       
-      <div className="mx-auto flex h-full max-w-screen-2xl items-center justify-between gap-2 sm:gap-4">
+      <div className="mx-auto flex h-full w-full max-w-screen-2xl items-center justify-between gap-2 sm:gap-4">
         {/* Now Playing Info */}
-        <div className="flex min-w-0 flex-1 items-center gap-2 sm:w-[30%] sm:min-w-[180px] sm:flex-none sm:gap-3">
-          <img
-            src={track.album?.images?.[0]?.url || track.album?.images?.[2]?.url}
-            alt={track.album?.name}
-            className="h-10 w-10 shrink-0 rounded shadow-lg sm:h-14 sm:w-14"
-          />
-          <div className="min-w-0 flex-1">
+          <div className="flex min-w-0 flex-1 items-center gap-2 sm:w-[30%] sm:min-w-[180px] sm:flex-none sm:gap-3">
+            <img
+              src={track.album?.images?.[0]?.url || track.album?.images?.[2]?.url}
+              alt={track.album?.name}
+              className="h-10 w-10 shrink-0 rounded sm:h-14 sm:w-14 object-cover"
+            />
+            <div className="min-w-0 flex-1">
             <p className="truncate text-xs font-normal text-white hover:underline cursor-pointer sm:text-sm">
               {track.name}
             </p>
@@ -299,9 +299,9 @@ function Player({ track, onNext, onPrevious }) {
             />
           </div>
         </div>
-      </div>
-    </footer>
-  )
-}
+        </div>
+      </footer>
+    )
+  }
 
 export default Player

@@ -54,6 +54,12 @@ const POPULAR_SEARCHES = [
   { text: 'Selena Gomez', type: 'trending' },
 ]
 
+const getPlaylistImage = (playlistId) =>
+  `https://picsum.photos/seed/playlist-${encodeURIComponent(playlistId)}/400/400`
+
+const getArtistImage = (artistName) =>
+  `https://picsum.photos/seed/artist-${encodeURIComponent(artistName)}/400/400`
+
 function Body({ selectedPlaylist, tracks, loading, searchTerm, onSearchTermChange, playlists, onSelectPlaylist, onPlayTrack, currentTrackId }) {
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
@@ -189,7 +195,7 @@ function Body({ selectedPlaylist, tracks, loading, searchTerm, onSearchTermChang
           {showSuggestions && suggestions.length > 0 && (
             <div 
               ref={suggestionsRef}
-              className="absolute left-0 right-0 top-full mt-2 overflow-hidden rounded-lg bg-[#282828] shadow-xl animate-fade-in"
+              className="absolute left-0 right-0 top-full mt-2 overflow-hidden rounded-lg bg-[#282828] shadow-xl animate-fade-in z-50"
             >
               {!searchTerm.trim() && recentSearches.length > 0 && (
                 <div className="px-4 py-2 text-xs font-bold text-[#a7a7a7] uppercase tracking-wider">
@@ -244,7 +250,22 @@ function Body({ selectedPlaylist, tracks, loading, searchTerm, onSearchTermChang
 
         {/* User Menu */}
         <div className="hidden md:flex items-center gap-2">
-          <button className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white hover:scale-105 transition">
+          {/* Install App Button */}
+          <button className="hidden lg:flex items-center gap-2 rounded-full px-3 py-1 text-sm font-bold text-white hover:scale-105 hover:text-white transition group">
+            <svg viewBox="0 0 16 16" fill="currentColor" className="h-4 w-4 text-[#a7a7a7] group-hover:text-white transition-colors">
+              <path d="M4.995 8.745a.75.75 0 0 1 1.06 0L7.25 9.939V4a.75.75 0 0 1 1.5 0v5.94l1.195-1.195a.75.75 0 1 1 1.06 1.06L8 12.866 4.995 9.805a.75.75 0 0 1 0-1.06z" />
+              <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13z" />
+            </svg>
+            <span className="text-[#a7a7a7] group-hover:text-white transition-colors">Install App</span>
+          </button>
+          
+          {/* Explore Premium */}
+          <button className="hidden md:flex rounded-full bg-white px-4 py-1.5 text-sm font-bold text-black hover:scale-105 hover:bg-gray-100 transition">
+            Explore Premium
+          </button>
+          
+          {/* User Profile */}
+          <button className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white hover:scale-105 transition ring-4 ring-black">
             <svg viewBox="0 0 16 16" fill="currentColor" className="h-4 w-4">
               <path d="M6.233.371a4.388 4.388 0 0 1 5.002 1.052c.421.459.713.992.904 1.554.143.421.263 1.173.22 1.894-.078 1.322-.638 2.408-1.399 3.316l-.127.152a.75.75 0 0 0 .201 1.13l2.209 1.275a4.75 4.75 0 0 1 2.375 4.114V16H.382v-1.143a4.75 4.75 0 0 1 2.375-4.113l2.209-1.275a.75.75 0 0 0 .201-1.13l-.127-.152c-.761-.908-1.322-1.994-1.4-3.316-.043-.721.077-1.473.22-1.894a4.346 4.346 0 0 1 .904-1.554c.411-.448.91-.807 1.468-1.052zM8 1.5a2.888 2.888 0 0 0-2.13.937 2.85 2.85 0 0 0-.588 1.022c-.077.226-.175.783-.143 1.249.054.908.468 1.717 1.08 2.449l.438.525a2.25 2.25 0 0 1-.603 3.39l-2.21 1.274A3.25 3.25 0 0 0 2.22 14.5h11.56a3.25 3.25 0 0 0-1.624-2.816l-2.21-1.275a2.25 2.25 0 0 1-.603-3.39l.438-.525c.612-.732 1.026-1.54 1.08-2.449.032-.466-.066-1.023-.143-1.249a2.85 2.85 0 0 0-.588-1.022A2.888 2.888 0 0 0 8 1.5z" />
             </svg>
@@ -253,14 +274,119 @@ function Body({ selectedPlaylist, tracks, loading, searchTerm, onSearchTermChang
       </header>
 
       <div className="px-4 pb-8 md:px-8">
-        {!selectedPlaylist ? (
-          <div className="grid min-h-[60vh] place-items-center text-center">
-            <div>
-              <h2 className="text-2xl font-bold text-white">Select a playlist</h2>
-              <p className="mt-2 text-[#a7a7a7]">Choose one from the sidebar to view tracks.</p>
+        {!selectedPlaylist && !searchTerm ? (
+          <div className="animate-fade-in pb-10">
+            {/* Good Evening Section */}
+            <h2 className="mb-4 mt-6 text-2xl font-bold md:text-3xl">Good Evening</h2>
+            <div className="mb-8 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+              {playlists.slice(0, 6).map((playlist) => (
+                <button
+                  key={`ge-${playlist.id}`}
+                  className="group flex h-16 items-center overflow-hidden rounded bg-[#f8f8f81a] transition hover:bg-[#ffffff2a]"
+                  onClick={() => onSelectPlaylist(playlist)}
+                >
+                  <div
+                    className="relative h-16 w-16 shrink-0 overflow-hidden shadow-[0_0_10px_rgba(0,0,0,0.3)]"
+                    style={{ backgroundColor: playlist.color || '#282828' }}
+                  >
+                    <img
+                      src={getPlaylistImage(playlist.id)}
+                      alt={`${playlist.name} cover`}
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                      onError={(event) => {
+                        event.currentTarget.style.display = 'none'
+                      }}
+                    />
+                  </div>
+                  <div className="flex flex-1 items-center justify-between px-4">
+                    <span className="line-clamp-2 truncate text-sm font-bold">{playlist.name}</span>
+                    <div className="flex h-10 w-10 shrink-0 scale-0 items-center justify-center rounded-full bg-[#1db954] text-black opacity-0 shadow-lg transition-all duration-300 group-hover:scale-100 group-hover:opacity-100">
+                      <PlayIcon />
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Your Top Mixes */}
+            <div className="mb-8">
+              <div className="mb-4 flex items-end justify-between">
+                <h2 className="text-2xl font-bold hover:underline cursor-pointer">Your Top Mixes</h2>
+                <span className="text-sm font-bold text-[#a7a7a7] hover:underline cursor-pointer">Show all</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                {playlists.slice(6, 12).map((playlist) => (
+                  <button
+                    key={`mix-${playlist.id}`}
+                    className="playlist-card group relative flex flex-col rounded-lg bg-[#181818] p-4 text-left transition hover:bg-[#282828]"
+                    onClick={() => onSelectPlaylist(playlist)}
+                  >
+                    <div className="relative mb-4 pb-[100%]">
+                      <div
+                        className="absolute inset-0 overflow-hidden rounded shadow-[0_8px_24px_rgba(0,0,0,0.5)]"
+                        style={{ backgroundColor: playlist.color || '#282828' }}
+                      >
+                        <img
+                          src={getPlaylistImage(playlist.id)}
+                          alt={`${playlist.name} cover`}
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                          onError={(event) => {
+                            event.currentTarget.style.display = 'none'
+                          }}
+                        />
+                      </div>
+                      <div className="absolute bottom-2 right-2 flex h-12 w-12 translate-y-2 items-center justify-center rounded-full bg-[#1db954] text-black opacity-0 shadow-xl transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                        <PlayIcon />
+                      </div>
+                    </div>
+                    <h3 className="mb-1 truncate text-base font-bold text-white">{playlist.name}</h3>
+                    <p className="line-clamp-2 text-sm text-[#a7a7a7]">{playlist.mood}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Trending Artists */}
+            <div className="mb-8">
+              <div className="mb-4 flex items-end justify-between">
+                <h2 className="text-2xl font-bold hover:underline cursor-pointer">Trending Artists</h2>
+                <span className="text-sm font-bold text-[#a7a7a7] hover:underline cursor-pointer">Show all</span>
+              </div>
+              <div className="flex overflow-x-auto pb-4 spotify-scroll gap-4">
+                {POPULAR_SEARCHES.slice(0, 8).map((artist, idx) => (
+                  <button
+                    key={`artist-${idx}`}
+                    className="playlist-card group relative flex w-48 shrink-0 flex-col items-center rounded-lg bg-[#181818] p-4 text-center transition hover:bg-[#282828]"
+                    onClick={() => onSearchTermChange(artist.text)}
+                  >
+                    <div className="relative mb-4 w-full pb-[100%]">
+                      <div
+                        className="absolute inset-0 overflow-hidden rounded-full bg-[#333] shadow-[0_8px_24px_rgba(0,0,0,0.5)]"
+                      >
+                        <img
+                          src={getArtistImage(artist.text)}
+                          alt={`${artist.text} artist`}
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                          onError={(event) => {
+                            event.currentTarget.style.display = 'none'
+                          }}
+                        />
+                      </div>
+                      <div className="absolute bottom-0 right-2 flex h-12 w-12 translate-y-2 items-center justify-center rounded-full bg-[#1db954] text-black opacity-0 shadow-xl transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                        <PlayIcon />
+                      </div>
+                    </div>
+                    <h3 className="mb-1 w-full truncate text-base font-bold text-white">{artist.text}</h3>
+                    <p className="text-sm text-[#a7a7a7]">Artist</p>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        ) : (
+        ) : selectedPlaylist && !searchTerm ? (
           <>
             {/* Playlist Header */}
             <div 
@@ -340,18 +466,46 @@ function Body({ selectedPlaylist, tracks, loading, searchTerm, onSearchTermChang
               />
             )}
           </>
-        )}
+        ) : null}
 
-        {/* Quick Picks Grid */}
-        {!searchTerm && (
+        {/* Search Results / Browse All */}
+        {searchTerm ? (
+           <div className="mt-4">
+            <h2 className="mb-4 text-2xl font-bold">Search Results</h2>
+            {loading ? (
+              <div className="space-y-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={`search-skeleton-${i}`} className="flex animate-pulse gap-4 rounded-md p-2">
+                     <div className="h-12 w-12 rounded bg-[#282828]" />
+                     <div className="flex-1 py-1">
+                       <div className="h-4 w-3/4 rounded bg-[#282828]" />
+                       <div className="mt-2 h-3 w-1/2 rounded bg-[#282828]" />
+                     </div>
+                  </div>
+                ))}
+              </div>
+            ) : tracks.length > 0 ? (
+              <Playlist 
+                tracks={tracks} 
+                onPlayTrack={onPlayTrack}
+                currentTrackId={currentTrackId}
+              />
+           ) : (
+               <div className="py-20 text-center text-[#a7a7a7]">
+                  <p className="text-xl font-bold text-white mb-2">No results found for &quot;{searchTerm}&quot;</p>
+                  <p>Please make sure your words are spelled correctly, or use less or different keywords.</p>
+               </div>
+           )}
+          </div>
+        ) : !selectedPlaylist && (
           <div className="mt-10">
             <h2 className="mb-4 text-2xl font-bold">Browse All</h2>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-              {playlists.slice(0, 12).map((playlist) => (
+              {playlists.slice(12).map((playlist) => (
                 <button
                   key={playlist.id}
                   className="playlist-card group relative overflow-hidden rounded-lg p-4 text-left transition"
-                  style={{ backgroundColor: playlist.color || '#282828' }}
+                  style={{ backgroundColor: playlist.color || '#181818' }}
                   onClick={() => onSelectPlaylist(playlist)}
                 >
                   <div className="relative">
